@@ -1,3 +1,4 @@
+# Test
 # Clairvoyance: A Pipeline Toolkit for Medical Time Series
 
 <a href="https://www.vanderschaar-lab.com/"><img src="assets/lab-logo-wtext-darktext.svg" width="500px" ></a>
@@ -14,7 +15,7 @@ This repository contains implementations of *Clairvoyance: A Pipeline Toolkit fo
 - Active sensing on time-series data
 - AutoML
 
-All API files for those applications can be found in [`/api`](/api) folder. 
+All API files for those applications can be found in [`/api`](/api) folder.
 All tutorials for those applications can be found in [`/tutorial`](/tutorial) folder.
 
 ![Block diagram of Clairvoyance](tutorial/figure/clairvoyance_block.png)
@@ -23,7 +24,7 @@ All tutorials for those applications can be found in [`/tutorial`](/tutorial) fo
 There are currently two ways of installing the required dependencies: using Docker or using Conda.
 
 ### Note on Requirements
-* Clairvoyance has been tested on Ubuntu 20.04, but should be broadly compatible with common Linux systems. 
+* Clairvoyance has been tested on Ubuntu 20.04, but should be broadly compatible with common Linux systems.
 * The Docker installation method is additionally compatible with Mac and Windows systems that support Docker.
 * Hardware requirements depends on the underlying ML models used, but a machine that can handle ML research tasks is recommended.
 * For faster computation, CUDA-capable Nvidia card is recommended (follow the CUDA-enabled installation steps below).
@@ -51,7 +52,7 @@ There are currently two ways of installing the required dependencies: using Dock
         * `--network host`: Use your machine's network and forward ports. Could alternatively publish ports, e.g. `-p 8888:8888`.
         * `-v $(pwd)/datasets/data:/home/clvusr/clairvoyance/datasets/data`: Share directory/ies with the Docker container as volumes, e.g. data.
         * `clairvoyancedocker/clv`: Specifies Clairvoyance Docker image.
-    * If using Windows: 
+    * If using Windows:
         * Use PowerShell and first run the command `$pwdwin = $(pwd).Path`. Then use `$pwdwin` instead of `$(pwd)` in the `docker run` command.
     * If using Windows or Mac:
         * Due to how Docker networking works, replace `--network host` with `-p 8888:8888`.
@@ -118,9 +119,9 @@ $ cd datasets/mimic_data_extraction && python extract_antibiotics_dataset.py
     * Navigate to `tutorial/` and run a tutorial of your choice.
 * To run Clairvoyance API from the command line, execute the appropriate command from within the Docker terminal (see example command below).
 
-## Example: Time-series prediction 
-To run the pipeline for training and evaluation on time-series 
-prediction framework, simply run `$ python -m api/main_api_prediction.py` or take a look 
+## Example: Time-series prediction
+To run the pipeline for training and evaluation on time-series
+prediction framework, simply run `$ python -m api/main_api_prediction.py` or take a look
 at the jupyter notebook `tutorial/tutorial_prediction.ipynb`.
 
 Note that any model architecture can be used as the predictor model such as
