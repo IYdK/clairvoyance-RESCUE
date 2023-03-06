@@ -25,3 +25,4 @@ experiments/cache
 .flake8
 
 _NOTE.txt
+.Rproj.user
