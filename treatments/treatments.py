@@ -1,4 +1,4 @@
-"""ITE model define.
+"""ITE model define
 """
 
 # Necessary modules
