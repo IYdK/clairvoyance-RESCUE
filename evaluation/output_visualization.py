@@ -289,7 +289,7 @@ def print_interpretation(interpretations, feature_name, metric_parameters, model
     return figs
 
 
-def print_counterfactual_predictions(patient_history, treatment_options, counterfactual_predictions):
+def print_counterfactual_predictions(patient_history, treatment_options, counterfactual_predictions, cat_labels):
     """Visualize the counterfactual predictions.
     
     Args:
@@ -312,33 +312,26 @@ def print_counterfactual_predictions(patient_history, treatment_options, counter
         extended_counterfactual = np.concatenate([[patient_history[-1]], counterfactual])
         plt.plot(range(history_length - 1, history_length + prediction_horizon), extended_counterfactual)
 
-        no_treatment_idx = np.where(treatment_options[index] == 0)[0]
-        plt.scatter(
-            np.array(range(history_length, history_length + prediction_horizon))[no_treatment_idx],
-            counterfactual[no_treatment_idx],
-            marker="o",
-            facecolors="none",
-            s=150,
-            c="#3788CF",
-            Label="No treatment",
-        )
-
-        treatment_idx = np.where(treatment_options[index] == 1)[0]
-        plt.scatter(
-            np.array(range(history_length, history_length + prediction_horizon))[treatment_idx],
-            counterfactual[treatment_idx],
-            marker="x",
-            s=150,
-            c="#C93819",
-            Label="Treatment",
-        )
+        # RESCUE: edited for categorical treatments
+        cat_colors = ["#3788CF", "#C93819", "#8a2be2"]
+        for category in range(treatment_options.shape[2]):
+            cat_idx = np.where(np.argmax(treatment_options[index], axis = 1) == category)
+            plt.scatter(
+                np.array(range(history_length, history_length + prediction_horizon))[cat_idx],
+                counterfactual[cat_idx],
+                marker="o",
+                facecolors="none",
+                s=100,
+                c=cat_colors[category],
+                Label=cat_labels[category],
+            )
 
     handles, labels = plt.gca().get_legend_handles_labels()
     by_label = dict(zip(labels, handles))
     plt.legend(by_label.values(), by_label.keys())
 
     plt.xlabel("Timestep", fontsize=15)
-    plt.ylabel("Predictions", fontsize=15)
+    plt.ylabel("AKI probability", fontsize=15)
     plt.title("Counterfactual predictions", fontsize=15)
     plt.show()
 

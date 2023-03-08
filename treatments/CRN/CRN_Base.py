@@ -120,11 +120,12 @@ class CRN_Base:
         )
         treatment_logit_predictions = tf.layers.dense(treatments_network_layer, self.num_treatments, activation=None)
 
+        # RESCUE: changed for to multiple treatments
         # For multiple treatments
-        # treatment_prob_predictions = tf.nn.softmax(treatment_logit_predictions)
+        treatment_prob_predictions = tf.nn.softmax(treatment_logit_predictions)
 
         # For binary treatments
-        treatment_prob_predictions = tf.nn.sigmoid(treatment_logit_predictions)
+        #treatment_prob_predictions = tf.nn.sigmoid(treatment_logit_predictions)
 
         return treatment_prob_predictions
 
@@ -163,7 +164,8 @@ class CRN_Base:
             self.treatment_prob_predictions = self.build_treatment_assignments_one_hot(self.balancing_representation)
             self.predictions = self.build_outcomes(self.balancing_representation)
 
-            self.loss_treatments = self.compute_loss_treatments(
+            # RESCUE: edited loss function from 'compute_loss_treatments' to 'compute_loss_treatments_one_hot'
+            self.loss_treatments = self.compute_loss_treatments_one_hot(
                 target_treatments=self.current_treatments,
                 treatment_predictions=self.treatment_prob_predictions,
                 active_entries=self.active_entries,
@@ -567,6 +569,16 @@ class CRN_Base:
             )
             * active_entries
         ) / tf.reduce_sum(active_entries)
+
+        return cross_entropy_loss
+
+    # RESCUE: added this loss function for categorical treatment (from CRN Github)
+    def compute_loss_treatments_one_hot(self, target_treatments, treatment_predictions, active_entries):
+        """Computes cross-entropy loss for categorical treatment prediction."""
+        treatment_predictions = tf.reshape(treatment_predictions, [-1, self.max_sequence_length, self.num_treatments])
+        cross_entropy_loss = tf.reduce_sum(
+            (- target_treatments * tf.log(treatment_predictions + 1e-8)) * active_entries) \
+                             / tf.reduce_sum(active_entries)
 
         return cross_entropy_loss
 

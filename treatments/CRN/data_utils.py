@@ -45,16 +45,18 @@ def data_preprocess_counterfactuals(
 
     dataset_crn_encoder = dict()
 
-    one_hot_treatments = np.zeros(shape=(treat.shape[0], treat.shape[1], 2))
-    treat = np.round(treat)
-    for patient_id in range(treat.shape[0]):
-        for t in range(treat.shape[1]):
-            if treat[patient_id][t][0] == 0.0:
-                one_hot_treatments[patient_id][t] = [1, 0]
-            elif treat[patient_id][t][0] == 1.0:
-                one_hot_treatments[patient_id][t] = [0, 1]
-            elif treat[patient_id][t][0] == -1.0:
-                one_hot_treatments[patient_id][t] = [-1, -1]
+    # RESCUE edited as treatment is one-hot already by preprocessing
+    one_hot_treatments = np.round(treat)
+    #one_hot_treatments = np.zeros(shape=(treat.shape[0], treat.shape[1], 2))
+    #treat = np.round(treat)
+    #for patient_id in range(treat.shape[0]):
+    #    for t in range(treat.shape[1]):
+    #        if treat[patient_id][t][0] == 0.0:
+    #            one_hot_treatments[patient_id][t] = [1, 0]
+    #        elif treat[patient_id][t][0] == 1.0:
+    #            one_hot_treatments[patient_id][t] = [0, 1]
+    #        elif treat[patient_id][t][0] == -1.0:
+    #            one_hot_treatments[patient_id][t] = [-1, -1]
 
     one_hot_treatments_encoder = one_hot_treatments[:, :timestep, :]
     one_hot_treatments_encoder = np.concatenate(
@@ -113,16 +115,18 @@ def data_preprocess(dataset, fold, split, static_mode, time_mode):
 
     dataset_crn = dict()
 
-    one_hot_treatments = np.zeros(shape=(treat.shape[0], treat.shape[1], 2))
-    treat = np.round(treat)
-    for patient_id in range(treat.shape[0]):
-        for timestep in range(treat.shape[1]):
-            if treat[patient_id][timestep][0] == 0.0:
-                one_hot_treatments[patient_id][timestep] = [1, 0]
-            elif treat[patient_id][timestep][0] == 1.0:
-                one_hot_treatments[patient_id][timestep] = [0, 1]
-            elif treat[patient_id][timestep][0] == -1.0:
-                one_hot_treatments[patient_id][timestep] = [-1, -1]
+    # RESCUE: edited as treatment is one-hot already by preprocessing
+    one_hot_treatments = np.round(treat)
+    #one_hot_treatments = np.zeros(shape=(treat.shape[0], treat.shape[1], 2))
+    #treat = np.round(treat)
+    #for patient_id in range(treat.shape[0]):
+    #    for timestep in range(treat.shape[1]):
+    #        if treat[patient_id][timestep][0] == 0.0:
+    #            one_hot_treatments[patient_id][timestep] = [1, 0]
+    #        elif treat[patient_id][timestep][0] == 1.0:
+    #            one_hot_treatments[patient_id][timestep] = [0, 1]
+    #        elif treat[patient_id][timestep][0] == -1.0:
+    #            one_hot_treatments[patient_id][timestep] = [-1, -1]
 
     active_entries = np.ndarray.max((y >= 0).astype(float), axis=-1)
     sequence_lengths = np.sum(active_entries, axis=1).astype(int)

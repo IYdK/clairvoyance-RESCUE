@@ -33,6 +33,7 @@ class CRN_Model(BaseEstimator, PredictorMixin):
         static_mode=None,
         time_mode=None,
         model_id="crn_model",
+        num_treatments=None # RESCUE: added for categorical treatments
     ):
         """
         Initialize the Counterfactual Recurrent Network (CRN).
@@ -68,6 +69,7 @@ class CRN_Model(BaseEstimator, PredictorMixin):
         self.static_mode = static_mode
         self.time_mode = time_mode
         self.model_id = model_id
+        self.num_treatments = num_treatments # RESCUE: added for categorical treatments
 
     def new(self, model_id):
         """Create a new model with the same parameter as the existing one.
@@ -97,6 +99,7 @@ class CRN_Model(BaseEstimator, PredictorMixin):
             static_mode=self.static_mode,
             time_mode=self.time_mode,
             model_id=model_id,
+            num_treatments=self.num_treatments, # RESCUE: added for categorical treatments
         )
 
     @staticmethod
@@ -136,6 +139,7 @@ class CRN_Model(BaseEstimator, PredictorMixin):
         num_outputs = dataset_crn_train["outputs"].shape[-1]
         max_sequence_length = dataset_crn_train["current_covariates"].shape[1]
         num_covariates = dataset_crn_train["current_covariates"].shape[-1]
+        num_treatments = dataset_crn_train['current_treatments'].shape[-1]  # RESCUE: added for categorical treatments
 
         self.hyperparams_encoder = {
             "rnn_hidden_units": self.encoder_rnn_hidden_units,
@@ -161,7 +165,7 @@ class CRN_Model(BaseEstimator, PredictorMixin):
 
         with tf.variable_scope(self.model_id, reuse=tf.AUTO_REUSE):
             self.encoder_params = {
-                "num_treatments": 2,
+                "num_treatments": num_treatments,  # RESCUE: added for categorical treatments
                 "num_covariates": num_covariates,
                 "num_outputs": num_outputs,
                 "max_sequence_length": max_sequence_length,
@@ -185,7 +189,7 @@ class CRN_Model(BaseEstimator, PredictorMixin):
                 num_covariates = training_seq_processed["current_covariates"].shape[-1]
 
                 self.decoder_params = {
-                    "num_treatments": 2,
+                    "num_treatments": num_treatments,# RESCUE: added for categorical treatments
                     "num_covariates": num_covariates,
                     "num_outputs": num_outputs,
                     "max_sequence_length": self.projection_horizon,
@@ -279,18 +283,20 @@ class CRN_Model(BaseEstimator, PredictorMixin):
             - model_path:    dictionary containing model_dir (directory where to save the model) and model_name for the
                                          the saved encoder and decoder models
         """
-        encoder_params = pickle.load(open(os.path.join(model_dir, "encoder_params_" + model_name + ".pkl"), "rb"))
+
+        # RESCUE: replaced all backslashes with forward slashes in os.path.join results
+        encoder_params = pickle.load(open(os.path.join(model_dir, "encoder_params_" + model_name + ".pkl").replace("\\","/"), "rb"))
         encoder_hyperparams = pickle.load(
-            open(os.path.join(model_dir, "hyperparams_encoder_" + model_name + ".pkl"), "rb")
+            open(os.path.join(model_dir, "hyperparams_encoder_" + model_name + ".pkl").replace("\\","/"), "rb")
         )
         encoder_model_name = "encoder_" + model_name
 
         encoder_model = CRN_Base(encoder_hyperparams, encoder_params, task=self.task)
         encoder_model.load_model(model_name=encoder_model_name, model_folder=model_dir, DEBUG_scope_prefix="crn_model/")
 
-        decoder_params = pickle.load(open(os.path.join(model_dir, "decoder_params_" + model_name + ".pkl"), "rb"))
+        decoder_params = pickle.load(open(os.path.join(model_dir, "decoder_params_" + model_name + ".pkl").replace("\\","/"), "rb"))
         decoder_hyperparams = pickle.load(
-            open(os.path.join(model_dir, "hyperparams_decoder_" + model_name + ".pkl"), "rb")
+            open(os.path.join(model_dir, "hyperparams_decoder_" + model_name + ".pkl").replace("\\","/"), "rb")
         )
         decoder_model_name = "decoder_" + model_name
         decoder_model = CRN_Base(decoder_hyperparams, decoder_params, b_train_decoder=True, task=self.task)
